@@ -1,0 +1,205 @@
+---
+title: "EDA-Challanges"
+format: html
+editor: visual
+---
+
+1\. Load the dataset data-wrangling and assigning the variable 'd'
+
+```{r}
+library (tidyverse)
+f <- "data-wrangling.csv"
+d <- read_csv(f, col_names = TRUE)
+attach(d)
+names(d)
+```
+
+2.  Create new variable BSD
+
+    ```{r}
+    d$BSD <- d$ Body_mass_male_mean/ d$Body_mass_female_mean
+    print(d)
+
+    ```
+
+3.  Create new variable sex-ratio
+
+    ```{r}
+    d$Sex_ratio <- d$ AdultFemale/ d$ AdultMales
+    print(d)
+
+    ```
+
+4.  Create new variable DI ( Defensibility Index)
+
+    ```{r}
+    d$DI <- d$ DayLength_km/ d$ HomeRange_km2
+    print(d)
+
+    ```
+
+5.  Calculate Diameter of the home range for each species
+
+    ```{r}
+    d$home_range_diameter <- d$HomeRange_km2/ 2
+    d$home_range_area <- pi * (d$home_range_diameter^2)
+    d$DI <- d$DayLength_km/ d$HomeRange_km2
+    print(d)
+    ```
+
+6.  Create the plot for showing overall relationship between day range length and time spent moving
+
+    ```{r}
+    library(ggplot2)
+    overall_plot <- ggplot(d, aes(x = DayLength_km, y = Move)) +
+      geom_point() +
+      geom_smooth(method = "lm", se = FALSE, color = "blue") +
+      labs(title = "Overall Relationship between Day Range Length and Time Spent Moving",
+           x = "Day Range Length",
+           y = "Time Spent Moving")
+           print(overall_plot)
+    ```
+
+7.  Create the plot by family
+
+    ```{r}
+    family_plot <- ggplot(d, aes(x = DayLength_km, y = Move, color = Family)) +
+      geom_point() +
+      geom_smooth(method = "lm", se = FALSE, color = "blue") +
+      labs(title = "Relationship between Day Range Length and Time Spent Moving by Primate Family",
+           x = "Day Range Length",
+           y = "Time Spent Moving")
+    print(family_plot)
+
+    ```
+
+    **No , the species that spend more time moving does not travel farther overall.There is no linear relationship between time spent moving and the day range length, neither overall nor by family species. Yes, I think we should transform the either of the variables (logarithmic transformation may improve the linearity).**
+
+8.  Create the plot to show relationship between day range length and time group size overall
+
+```{r}
+overall_plot <- ggplot(d, aes(x = DayLength_km, y = MeanGroupSize)) +
+  geom_point() +
+  labs(title = "Overall Relationship",
+       x = "Day length Range",
+       y = "Group Size")
+print(overall_plot)
+
+```
+
+9.  Create the plot by family
+
+    ```{r}
+    family_plot <- ggplot(d, aes(x = DayLength_km, y = MeanGroupSize, color = Family)) +
+      geom_point() +
+      labs(title = "Relationship by Family",
+           x = "Day Range Length",
+           y = "Group Size")
+    print(family_plot)
+    ```
+
+**There is no linear relationship between Day range length and time group size neither overall, nor by family. In this plot also, transformation of either or both variable can help linearize relationships and improve the interpretability of the data.**
+
+10. Plot the relationship between body size dimorphism and canine dimorphism
+
+```{r}
+overall_plot <- ggplot(d, aes(x = BSD, y = Canine_Dimorphism)) +
+  geom_point() +
+  labs(title = "Overall Relationship",
+       x = "Body Size Dimorphism",
+       y = "Canine Size Dimorphism")
+print(overall_plot)
+
+```
+
+**Yes, the taxa with greater size dimorphism also show greater canine dimorphism. There is a linear relationship between body size dimorphism and canine size dimorphism**
+
+11.Plot the relationship between body size dimorphism and canine dimorphism by family
+
+```{r}
+
+family_plot <- ggplot(d, aes(x = BSD, y = Canine_Dimorphism, color = Family)) +
+  geom_point() +
+  labs(title = "Relationship by Family",
+       x = "Body Size Dimorphism",
+       y = "Canine Size Dimorphism")
+print(family_plot)
+
+
+```
+
+**Linear relationship between Body size Dimorphism and canine size Dimorphism is observed greatly among Cercopithecidae family.**
+
+12.Creating a new variable named **diet_strategy** and the box-plots
+
+```{r}
+d <- d%>%
+  mutate(diet_strategy = case_when(
+    Fruit > 50 ~ "frugivore",
+    Leaves > 50 ~ "folivore",
+    TRUE ~ "omnivore"
+  ))
+print(d)
+boxplot_plot <- ggplot(d, aes(x = diet_strategy, y = MeanGroupSize)) +
+  geom_boxplot() +
+  labs(title = "Boxplots of Group Size by Dietary Strategy",
+       x = "Dietary Strategy",
+       y = "Group Size")
+print(boxplot_plot)
+```
+
+13. Loading my own dataset "Boxplot.csv" and calculating the summary statistics
+
+    ```{r}
+    library (tidyverse)
+    f <- "Boxplot.csv"
+    d <- read_csv(f, col_names = TRUE)
+    attach(d)
+    names(d)
+    nrow(d)
+    ncol(d)
+    variable_names <- names(d)
+    print(variable_names)
+    numeric_variables <- names(d)[sapply(d, is.numeric)]
+    summary_list <- list()
+    for (variable in numeric_variables) {
+      num_obs <- sum(!is.na(d[[variable]]))
+      mean_val <- mean(d[[variable]], na.rm = TRUE)
+      sd_val <- sd(d[[variable]], na.rm = TRUE)
+      five_num_summary <- summary(d[[variable]], na.rm = TRUE)
+      
+      summary_list[[variable]] <- list(
+        variable = variable,
+        num_obs = num_obs,
+        mean_val = mean_val,
+        sd_val = sd_val,
+        five_num_summary = five_num_summary
+      )
+    }
+    for (variable_summary in summary_list) {
+      print(paste("Variable:", variable_summary$variable))
+      print(paste("Number of observations:", variable_summary$num_obs))
+      print(paste("Mean:", variable_summary$mean_val))
+      print(paste("Standard Deviation:", variable_summary$sd_val))
+      print("Five-Number Summary:")
+      print(variable_summary$five_num_summary)
+    }
+
+    ```
+
+14. Ploting box-plot for my own dataset "Boxplot.csv"
+
+    ```{r}
+    library(tidyverse)
+    f <- "Boxplot.csv"
+    d <- read_csv(f, col_names = TRUE)
+
+    ggplot(d, aes(x = as.factor(Frequency), y = Absorbance, fill = Group)) +
+      geom_boxplot(width = 0.7, outlier.shape = NA, na.rm = TRUE) +
+      labs(x = "Frequency in Hz", y = "MEPA Delay Value", 
+           title = " EHF Loss vs EHF Normal MEPA Delay across frequencies") +
+      theme_classic() +
+      ylim(0, 1) +
+      theme(strip.text = element_blank())
+
+    ```
