@@ -1,5 +1,5 @@
 ---
-title: "EDA-Challanges"
+title: EDA Challanges
 format: pdf
 editor: visual
 ---
@@ -37,7 +37,6 @@ names(d)
     d$home_range_area <- pi * (d$home_range_diameter^2)
     d$DI <- d$DayLength_km/ d$HomeRange_km2
     print(d)
-
     ```
 
     5.  Create new variable DI ( Defensibility Index)
@@ -71,13 +70,24 @@ names(d)
            y = "Time Spent Moving")
 
     print(family_plot)
-
-
     ```
 
     **No , the species that spend more time moving does not travel farther overall.There is no linear relationship between time spent moving and the day range length, overall .However, when we see the relationship by family, Atelidae, cebidae, and Hylobatidae family shows some degree of linear relationship. Yes, I think we should transform the either of the variables (logarithmic transformation may improve the linearity).**
 
-5.  Create the plot to show relationship between day range length and time group size overall
+    8.  Applying logarithmic transformation to one variable (move)
+
+        ```{r}
+        d$log_Move <- log(d$Move)
+        overall_plot <- ggplot(d, aes(x = DayLength_km, y = log_Move)) +
+          geom_point() +
+          geom_smooth(method = "lm", se = FALSE, color = "blue") +
+          labs(title = "Overall Relationship between Day Range Length and Time Spent Moving",
+               x = "Day Range Length",
+               y = "Log Time Spent Moving")
+               print(overall_plot)
+        ```
+
+    9.  Create the plot to show relationship between day range length and time group size overall
 
 ```{r}
 overall_plot <- ggplot(d, aes(x = DayLength_km, y = MeanGroupSize)) +
@@ -113,7 +123,6 @@ overall_plot <- ggplot(d, aes(x = BSD, y = Canine_Dimorphism)) +
        x = "Body Size Dimorphism",
        y = "Canine Size Dimorphism")
 print(overall_plot)
-
 ```
 
 **Yes, the taxa with greater size dimorphism also show greater canine dimorphism. There is a linear relationship between body size dimorphism and canine size dimorphism**
@@ -130,8 +139,6 @@ family_plot <- ggplot(d, aes(x = BSD, y = Canine_Dimorphism, color = Family)) +
        x = "Body Size Dimorphism",
        y = "Canine Size Dimorphism")
 print(family_plot)
-
-
 ```
 
 **Positive Linear relationship between Body size Dimorphism and canine size Dimorphism is observed among Cebidae, Cercopithecidae, Hominidae,Hylobatidae, Pitheciidae, and Lorisidae family. However, negative linear relationship is observed among Atelidae, Lemuridae, and cheirogalidae family.**
@@ -143,7 +150,7 @@ library(dplyr)
 library(ggplot2)
 
 
-# Creating the new variable 'diet_strategy'
+# Creating the new variable diet_strategy
 d <- d %>%
   mutate(diet_strategy = case_when(
     Fruit > 50 ~ "frugivore",
@@ -151,13 +158,13 @@ d <- d %>%
     TRUE ~ "omnivore"
   ))
 
-# Updating 'omnivore' category to exclude species where both Fruit and Leaves > 50%
+# Updating omnivore category to exclude species where both Fruit and Leaves > 50%
 d <- d %>%
   mutate(diet_strategy = case_when(
     diet_strategy == "omnivore" & (is.na(Fruit) | Fruit <= 50) & (is.na(Leaves) | Leaves <= 50) ~ "omnivore",
     TRUE ~ diet_strategy
   ))
-d
+
 # Create boxplots
 boxplot_plot <- ggplot(d, aes(x = diet_strategy, y = MeanGroupSize)) +
   geom_boxplot() +
@@ -165,13 +172,15 @@ boxplot_plot <- ggplot(d, aes(x = diet_strategy, y = MeanGroupSize)) +
        x = "Dietary Strategy",
        y = "Group Size")
 print(boxplot_plot)
-
 ```
 
-13.  In one line of code, using {dplyr} verbs and the forward pipe (`%>%` or `|>`) operator, do the following:
+13. In one line of code, using {dplyr} verbs and the forward pipe (`%>%` or `|>`) operator, do the following:
 
     ```{r}
-    d <- d %>%
+    library(dplyr)
+    library(readr)
+    d <- read_csv(f, col_names = TRUE)
+    D <- d %>%
       mutate(Binomial = paste(Genus, Species, sep = " ")) %>%
       select(Binomial, Family, Brain_Size_Species_Mean, Body_mass_male_mean) %>%
       group_by(Family) %>%
@@ -180,9 +189,12 @@ print(boxplot_plot)
         Avg_Body_mass_male_mean = mean(Body_mass_male_mean, na.rm = TRUE)
       ) %>%
       arrange(Avg_Brain_size_species_mean)
-    print(d)
+    D
     ```
 
+```{=html}
+<!-- -->
+```
 14. Loading my own dataset "Boxplot.csv" and calculating the summary statistics
 
     ```{r}
@@ -232,9 +244,7 @@ print(boxplot_plot)
     ggplot(d, aes(x = as.factor(Frequency), y = Absorbance, fill = Group)) +
       geom_boxplot(width = 0.7, outlier.shape = NA, na.rm = TRUE) +
       labs(x = "Frequency in Hz", y = "MEPA Delay Value", 
-           title = " EHF Loss vs EHF Normal MEPA Delay across frequencies") +
+           title = "EHF Loss vs EHF Normal MEPA Delay across frequencies") +
       theme_classic() +
-      ylim(0, 1) +
-      theme(strip.text = element_blank())
-
+      ylim(0, 1)
     ```
