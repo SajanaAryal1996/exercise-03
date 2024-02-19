@@ -49,7 +49,7 @@ names(d)
     6.  Create the plot for showing overall relationship between day range length and time spent moving
 
     ```{r}
-    overall_plot <- ggplot(d, aes(x = DayLength_km, y = Move)) +
+    overall_plot <- ggplot(d, aes(x = log(Move), y = log(DayLength_km))) +
       geom_point() +
       geom_smooth(method = "lm", se = FALSE, color = "blue") +
       labs(title = "Overall Relationship between Day Range Length and Time Spent Moving",
@@ -76,16 +76,16 @@ names(d)
 
     8.  Applying logarithmic transformation to one variable (move)
 
-        ```{r}
-        d$log_Move <- log(d$Move)
-        overall_plot <- ggplot(d, aes(x = DayLength_km, y = log_Move)) +
-          geom_point() +
-          geom_smooth(method = "lm", se = FALSE, color = "blue") +
-          labs(title = "Overall Relationship between Day Range Length and Time Spent Moving",
-               x = "Day Range Length",
-               y = "Log Time Spent Moving")
-               print(overall_plot)
-        ```
+```{r}
+  d$log_Move <- log(d$Move)
+  overall_plot <- ggplot(d, aes(x = DayLength_km, y = log_Move)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +
+    labs(title = "Overall Relationship between Day Range Length and Time Spent Moving",
+         x = "Day Range Length",
+         y = "Log Time Spent Moving")
+         print(overall_plot)
+```
 
     9.  Create the plot to show relationship between day range length and time group size overall
 
@@ -101,16 +101,16 @@ print(overall_plot)
 
 9.  Create the plot by family
 
-    ```{r}
-    family_plot <- ggplot(d, aes(x = DayLength_km, y = MeanGroupSize, color = Family)) +
-      geom_point() +
-      geom_smooth(method = "lm", se = FALSE, color = "blue") +
-       facet_wrap(~Family, scales = "free_y", ncol = 2) +
-      labs(title = "Relationship by Family",
-           x = "Day Range Length",
-           y = "Group Size")
-    print(family_plot)
-    ```
+```{r}
+family_plot <- ggplot(d, aes(x = DayLength_km, y = MeanGroupSize, color = Family)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+   facet_wrap(~Family, scales = "free_y", ncol = 2) +
+  labs(title = "Relationship by Family",
+       x = "Day Range Length",
+       y = "Group Size")
+print(family_plot)
+```
 
 **There is some degree of positive linear relationship between Day range length and time group size overall. In this plot, when relationship is analyzed by family, positive linear relationship is seen among Atelidae, Cebidae, cercopithecidae, hominidae, Indriidae. and Pithecidae, and negative relationship is seen in Hylobatidae family. In my opinion, transformation off data is not required.**
 
