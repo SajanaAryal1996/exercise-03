@@ -192,9 +192,8 @@ print(boxplot_plot)
     D
     ```
 
-```{=html}
 <!-- -->
-```
+
 14. Loading my own dataset "Boxplot.csv" and calculating the summary statistics
 
     ```{r}
