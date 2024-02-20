@@ -4,7 +4,7 @@ format: pdf
 editor: visual
 ---
 
-1\. Load the dataset data-wrangling and assigning the variable 'd'
+1. Load the dataset data-wrangling and assigning the variable 'd'
 
 ```{r}
 library (tidyverse)
