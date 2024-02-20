@@ -33,68 +33,71 @@ names(d)
 4.  Calculate Diameter of the home range for each species
 
     ```{r}
-    d$home_range_diameter <- d$HomeRange_km2/ 2
-    d$home_range_area <- pi * (d$home_range_diameter^2)
-    d$DI <- d$DayLength_km/ d$HomeRange_km2
+    d$home_range_diameter <- 2 * sqrt(d$HomeRange_km2 / pi)
     print(d)
     ```
 
     5.  Create new variable DI ( Defensibility Index)
 
     ```{r}
-    d$DI <- d$ DayLength_km/ d$ home_range_diameter
+    d$DI <- d$DayLength_km / d$home_range_diameter
     print(d)
     ```
 
     6.  Create the plot for showing overall relationship between day range length and time spent moving
 
     ```{r}
-    overall_plot <- ggplot(d, aes(x = log(Move), y = log(DayLength_km))) +
+    overall_plot <- ggplot(d, aes(x = Move, y = DayLength_km)) +
       geom_point() +
       geom_smooth(method = "lm", se = FALSE, color = "blue") +
       labs(title = "Overall Relationship between Day Range Length and Time Spent Moving",
-           x = "Day Range Length",
-           y = "Time Spent Moving")
+           x = "Time spent moving",
+           y = "Day Range Length")
            print(overall_plot)
     ```
 
     7.  Create the plot by family
 
     ```{r}
-    family_plot <- ggplot(d, aes(x = DayLength_km, y = Move, color = Family)) +
+    family_plot <- ggplot(d, aes(x = Move, y = DayLength_km, color = Family)) +
       geom_point() +
       geom_smooth(method = "lm", se = FALSE, color = "blue") +
       facet_wrap(~Family, scales = "free_y", ncol = 2) +
       labs(title = "Relationship between Day Range Length and Time Spent Moving by Primate Family",
-           x = "Day Range Length",
-           y = "Time Spent Moving")
+           x = "Time Spent Moving",
+           y = "Day Range Length")
 
     print(family_plot)
     ```
 
     **No , the species that spend more time moving does not travel farther overall.There is no linear relationship between time spent moving and the day range length, overall .However, when we see the relationship by family, Atelidae, cebidae, and Hylobatidae family shows some degree of linear relationship. Yes, I think we should transform the either of the variables (logarithmic transformation may improve the linearity).**
 
-    8.  Applying logarithmic transformation to one variable (move)
+    8.  Applying logarithmic transformation to both variable
 
 ```{r}
-  d$log_Move <- log(d$Move)
-  overall_plot <- ggplot(d, aes(x = DayLength_km, y = log_Move)) +
+  overall_plot <- ggplot(d, aes(x = log(Move), y = log(DayLength_km))) +
     geom_point() +
     geom_smooth(method = "lm", se = FALSE, color = "blue") +
     labs(title = "Overall Relationship between Day Range Length and Time Spent Moving",
-         x = "Day Range Length",
-         y = "Log Time Spent Moving")
+         x = "Time Spent Moving",
+         y = "Day Range Length")
          print(overall_plot)
+         
 ```
 
-    9.  Create the plot to show relationship between day range length and time group size overall
+T**he logarithmic scale improved the linearity**
+
+```         
+9.  Create the plot to show relationship between day range length and time group size overall
+```
 
 ```{r}
-overall_plot <- ggplot(d, aes(x = DayLength_km, y = MeanGroupSize)) +
+overall_plot <- ggplot(d, aes(x =MeanGroupSize , y = DayLength_km)) +
   geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
   labs(title = "Overall Relationship",
-       x = "Day length Range",
-       y = "Group Size")
+       x = "Group Size",
+       y = "Day length Range")
 print(overall_plot)
 
 ```
@@ -102,13 +105,13 @@ print(overall_plot)
 9.  Create the plot by family
 
 ```{r}
-family_plot <- ggplot(d, aes(x = DayLength_km, y = MeanGroupSize, color = Family)) +
+family_plot <- ggplot(d, aes(x =MeanGroupSize , y = DayLength_km, color = Family)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
    facet_wrap(~Family, scales = "free_y", ncol = 2) +
   labs(title = "Relationship by Family",
-       x = "Day Range Length",
-       y = "Group Size")
+       x = "Group Size",
+       y = "Day Range Length")
 print(family_plot)
 ```
 
@@ -119,6 +122,7 @@ print(family_plot)
 ```{r}
 overall_plot <- ggplot(d, aes(x = BSD, y = Canine_Dimorphism)) +
   geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
   labs(title = "Overall Relationship",
        x = "Body Size Dimorphism",
        y = "Canine Size Dimorphism")
